@@ -14,10 +14,49 @@
     display:flex;align-items:center;justify-content:center;overflow:hidden;
     -webkit-font-smoothing:antialiased;
   }
-  #stars{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;}
-  
-  /* 背景呼吸光晕 */
-  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.45;z-index:1;pointer-events:none;will-change:transform;}
+
+  /* ========== 背景层 1：随机壁纸 ========== */
+  .bg-photo{
+    position:fixed;inset:0;z-index:0;
+    background-size:cover;
+    background-position:center;
+    background-repeat:no-repeat;
+    opacity:0;
+    transition:opacity .8s ease;
+    pointer-events:none;
+    will-change:opacity;
+  }
+  .bg-photo.visible{opacity:1;}
+  /* 深色遮罩，保证文字可读 */
+  .bg-photo::after{
+    content:"";
+    position:absolute;inset:0;
+    background:linear-gradient(180deg,
+      rgba(5,6,15,.52) 0%,
+      rgba(5,6,15,.72) 48%,
+      rgba(5,6,15,.86) 100%);
+  }
+  /* 桌面端给壁纸加极缓慢的 Ken Burns 效果 */
+  @media (min-width:769px) and (prefers-reduced-motion:no-preference){
+    .bg-photo.visible{animation:kenburns 42s ease-in-out infinite alternate;}
+    @keyframes kenburns{
+      from{transform:scale(1);}
+      to  {transform:scale(1.07);}
+    }
+  }
+
+  /* ========== 背景层 2：星空 ========== */
+  #stars{
+    position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;
+    transition:opacity .8s ease;
+  }
+
+  /* ========== 背景层 3：呼吸光晕 ========== */
+  .blob{
+    position:fixed;border-radius:50%;filter:blur(70px);opacity:.45;z-index:1;
+    pointer-events:none;will-change:transform,opacity;
+    transition:opacity .8s ease;
+  }
   .b1{width:60vmax;height:60vmax;left:-22vmax;top:-26vmax;
       background:radial-gradient(circle at 40% 40%,#1e5cff,transparent 62%);
       animation:drift1 20s ease-in-out infinite;}
@@ -27,49 +66,83 @@
   @keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1);}50%{transform:translate3d(8vmax,6vmax,0) scale(1.15);}}
   @keyframes drift2{0%,100%{transform:translate3d(0,0,0) scale(1.12);}50%{transform:translate3d(-7vmax,-5vmax,0) scale(.94);}}
 
-  /* 主体内容 */
-  .wrap{position:relative;z-index:2;width:min(96vw,820px);padding:20px 15px;text-align:center;
-        display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  /* 切到随机壁纸时：星空淡出，光晕压到很淡 */
+  body.mode-random #stars{opacity:0;}
+  body.mode-random .blob{opacity:.14;}
 
-  /* ---- 班徽置于顶部 ---- */
+  /* ========== 壁纸切换按钮 ========== */
+  .mode-switch{
+    position:fixed;
+    top:calc(14px + env(safe-area-inset-top,0px));
+    right:calc(14px + env(safe-area-inset-right,0px));
+    z-index:20;
+    display:flex;gap:6px;padding:4px;border-radius:999px;
+    background:rgba(10,15,30,.45);
+    border:1px solid rgba(255,255,255,.12);
+    -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);
+    box-shadow:0 10px 30px -12px rgba(0,0,0,.8);
+  }
+  .mode-switch button{
+    appearance:none;-webkit-appearance:none;border:0;background:transparent;
+    color:rgba(234,240,255,.62);
+    font-family:inherit;font-size:12px;letter-spacing:.08em;
+    padding:8px 15px;border-radius:999px;cursor:pointer;
+    transition:color .25s ease, background .25s ease, box-shadow .25s ease;
+    white-space:nowrap;-webkit-tap-highlight-color:transparent;
+  }
+  .mode-switch button:hover{color:#fff;background:rgba(255,255,255,.08);}
+  .mode-switch button.active{
+    color:#05060f;font-weight:600;
+    background:linear-gradient(135deg,#9fd7ff,#c9b6ff);
+    box-shadow:0 0 18px rgba(150,200,255,.55);
+  }
+
+  /* ========== 主内容 ========== */
+  .wrap{
+    position:relative;z-index:2;width:min(96vw,820px);padding:20px 15px;
+    text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  }
+
+  /* 班徽置顶 */
   .header-badge{
-    margin-bottom: clamp(8px, 1.5vw, 16px);
-    display: flex;justify-content: center;align-items: center;
+    margin-bottom:clamp(8px,1.5vw,16px);
+    display:flex;justify-content:center;align-items:center;
   }
   .header-badge img{
-    width: clamp(80px, 20vw, 130px);
-    height: auto;object-fit: contain;border-radius: 50%;
-    filter: drop-shadow(0 0 22px rgba(80,140,255,.55));
-    animation: floatBadge 6s ease-in-out infinite;
+    width:clamp(80px,20vw,130px);height:auto;object-fit:contain;border-radius:50%;
+    filter:drop-shadow(0 0 22px rgba(80,140,255,.55));
+    animation:floatBadge 6s ease-in-out infinite;
   }
   @keyframes floatBadge{
     0%,100%{transform:translateY(0);}
-    50%{transform:translateY(-6px);}
+    50%    {transform:translateY(-6px);}
   }
 
-  /* ---- 文字区域：整体调大 ---- */
   .eyebrow{margin:0 0 10px;font-size:clamp(12px,1.7vw,15px);letter-spacing:.42em;text-indent:.42em;
            color:rgba(234,240,255,.5);text-transform:uppercase;}
 
   h1{margin:0;font-size:clamp(26px,4.6vw,44px);font-weight:700;letter-spacing:.14em;text-indent:.14em;
      background:linear-gradient(100deg,#ffffff 0%,#9fd7ff 35%,#c9b6ff 65%,#ffffff 100%);
      background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
-     animation:shine 7s linear infinite;}
+     animation:shine 7s linear infinite;
+     filter:drop-shadow(0 2px 14px rgba(0,0,0,.55));}
   @keyframes shine{from{background-position:0% 50%;}to{background-position:-220% 50%;}}
 
-  .sub{margin:14px 0 6px;font-size:clamp(14px,2vw,18px);letter-spacing:.08em;color:rgba(234,240,255,.62);}
+  .sub{margin:14px 0 6px;font-size:clamp(14px,2vw,18px);letter-spacing:.08em;
+       color:rgba(234,240,255,.72);text-shadow:0 1px 10px rgba(0,0,0,.6);}
 
   .now{margin:0 0 clamp(22px,4vw,34px);font-size:clamp(12px,1.7vw,15px);letter-spacing:.05em;
-       color:rgba(160,200,255,.8);font-variant-numeric:tabular-nums;}
+       color:rgba(190,220,255,.85);font-variant-numeric:tabular-nums;
+       text-shadow:0 1px 10px rgba(0,0,0,.6);}
 
-  /* ---- 倒计时数字：整体调大 ---- */
+  /* 倒计时数字 */
   .clock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.6vw,18px);width:100%;}
   .unit{position:relative;overflow:hidden;padding:clamp(16px,3vw,28px) 4px clamp(12px,2.2vw,20px);
         border-radius:clamp(14px,2vw,24px);
-        background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.028));
-        border:1px solid rgba(255,255,255,.12);
-        box-shadow:0 24px 55px -22px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.14);
-        -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);}
+        background:linear-gradient(180deg,rgba(10,16,32,.55),rgba(10,16,32,.32));
+        border:1px solid rgba(255,255,255,.14);
+        box-shadow:0 24px 55px -22px rgba(0,0,0,.95),inset 0 1px 0 rgba(255,255,255,.14);
+        -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);}
   .unit::after{content:"";position:absolute;inset:0;
     background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.16) 50%,transparent 68%);
     transform:translateX(-130%);animation:sweep 6s ease-in-out infinite;pointer-events:none;}
@@ -83,80 +156,101 @@
        font-size:clamp(34px,9.5vw,84px);font-weight:700;line-height:1;letter-spacing:.02em;display:block;}
   #d{background:linear-gradient(180deg,#ffffff 0%,#8fdcff 55%,#7c9dff 100%);
      -webkit-background-clip:text;background-clip:text;color:transparent;
-     filter:drop-shadow(0 0 18px rgba(110,180,255,.45));}
-  #h,#m,#s{color:#f2f6ff;text-shadow:0 0 22px rgba(150,190,255,.35);}
+     filter:drop-shadow(0 0 20px rgba(110,180,255,.55));}
+  #h,#m,#s{color:#f2f6ff;text-shadow:0 0 22px rgba(150,190,255,.45);}
   .num.pop{animation:pop .5s cubic-bezier(.2,.85,.25,1);}
   @keyframes pop{0%{transform:translateY(-34%) scale(.88);opacity:0;filter:blur(7px);}
                  55%{transform:translateY(0) scale(1.08);opacity:1;filter:blur(0);}
                  100%{transform:translateY(0) scale(1);opacity:1;}}
 
   .label{margin-top:clamp(8px,1.6vw,15px);font-size:clamp(13px,1.9vw,18px);
-         letter-spacing:.3em;text-indent:.3em;color:rgba(234,240,255,.55);}
+         letter-spacing:.3em;text-indent:.3em;color:rgba(234,240,255,.62);}
 
-  /* ---- 进度条 ---- */
+  /* 进度条 */
   .progress-wrap{margin-top:clamp(24px,4.5vw,46px);width:100%;}
-  .progress{height:8px;border-radius:99px;background:rgba(255,255,255,.07);
-            border:1px solid rgba(255,255,255,.08);overflow:hidden;}
+  .progress{height:8px;border-radius:99px;background:rgba(255,255,255,.1);
+            border:1px solid rgba(255,255,255,.1);overflow:hidden;}
   .progress i{display:block;height:100%;width:0%;border-radius:99px;
               background:linear-gradient(90deg,#5ee7ff,#a78bfa,#ff7ac6);
               box-shadow:0 0 20px rgba(120,180,255,.85);
               transition:width .8s cubic-bezier(.2,.8,.2,1);}
   .pct{margin-top:12px;font-size:clamp(12px,1.7vw,15px);letter-spacing:.12em;
-       color:rgba(234,240,255,.5);font-variant-numeric:tabular-nums;}
-  .pct b{color:rgba(180,225,255,.95);font-weight:600;}
+       color:rgba(234,240,255,.55);font-variant-numeric:tabular-nums;
+       text-shadow:0 1px 10px rgba(0,0,0,.6);}
+  .pct b{color:rgba(190,230,255,.98);font-weight:600;}
 
   .status{margin:clamp(18px,3.2vw,34px) 0 0;font-size:clamp(12px,1.7vw,15px);
-          letter-spacing:.14em;color:rgba(234,240,255,.45);}
+          letter-spacing:.14em;color:rgba(234,240,255,.5);
+          text-shadow:0 1px 10px rgba(0,0,0,.6);}
 
   /* ================= 移动端适配 ================= */
-  @media screen and (max-width: 600px) {
-    .blob { opacity: 0.25; filter: blur(50px); }
+  @media screen and (max-width:600px){
+    .blob{opacity:.25;filter:blur(50px);}
+    body.mode-random .blob{opacity:.1;}
 
-    .wrap { padding: 15px 10px; }
+    .wrap{padding:15px 10px;}
 
-    /* 手机端也要让字体够大，同时保证 4 列不换行 */
-    .clock { gap: 6px; }
-    .unit { padding: 14px 2px 10px; border-radius: 14px; }
-    .num { font-size: 42px; }
-    .label { font-size: 14px; letter-spacing: .08em; margin-top: 6px; }
+    .clock{gap:6px;}
+    .unit{padding:14px 2px 10px;border-radius:14px;}
+    .num{font-size:42px;}
+    .label{font-size:14px;letter-spacing:.08em;margin-top:6px;}
 
-    .header-badge img { width: 92px; }
-    .eyebrow { font-size: 11px; margin-bottom: 6px; }
-    h1 { font-size: 28px; }
-    .sub { font-size: 15px; margin-top: 10px; }
-    .now { font-size: 11px; margin-bottom: 18px; }
+    .header-badge img{width:92px;}
+    .eyebrow{font-size:11px;margin-bottom:6px;}
+    h1{font-size:28px;}
+    .sub{font-size:15px;margin-top:10px;}
+    .now{font-size:11px;margin-bottom:18px;}
 
-    .progress-wrap { margin-top: 22px; }
-    .pct { font-size: 12px; }
-    .status { font-size: 12px; margin-top: 16px; }
+    .progress-wrap{margin-top:22px;}
+    .pct{font-size:12px;}
+    .status{font-size:12px;margin-top:16px;}
+
+    /* 按钮在移动端紧凑一些，往下挪一点避开状态栏 */
+    .mode-switch{
+      top:calc(10px + env(safe-area-inset-top,0px));
+      right:calc(10px + env(safe-area-inset-right,0px));
+      gap:4px;padding:3px;
+    }
+    .mode-switch button{font-size:11px;padding:7px 11px;letter-spacing:.04em;}
   }
 
-  /* 超窄屏（小于 360px）再缩一点，避免数字溢出 */
-  @media screen and (max-width: 360px) {
-    .num { font-size: 34px; }
-    .label { font-size: 12px; }
-    h1 { font-size: 24px; }
-    .sub { font-size: 13px; }
+  @media screen and (max-width:360px){
+    .num{font-size:34px;}
+    .label{font-size:12px;}
+    h1{font-size:24px;}
+    .sub{font-size:13px;}
+    .mode-switch button{font-size:10px;padding:6px 9px;}
   }
 
   @media (prefers-reduced-motion:reduce){
-    .blob,h1,.unit::after,.num.pop,.header-badge img{animation:none !important;}
+    .blob,h1,.unit::after,.num.pop,.header-badge img,.bg-photo.visible{animation:none !important;}
     .progress i{transition:none;}
   }
 </style>
 </head>
-<body>
+<body class="mode-default">
 
+<!-- ========== 背景层 1：随机壁纸 ========== -->
+<div class="bg-photo" id="bgPhoto" aria-hidden="true"></div>
+
+<!-- ========== 背景层 2：星空 ========== -->
 <canvas id="stars" aria-hidden="true"></canvas>
+
+<!-- ========== 背景层 3：呼吸光晕 ========== -->
 <div class="blob b1" aria-hidden="true"></div>
 <div class="blob b2" aria-hidden="true"></div>
 
+<!-- ========== 壁纸切换按钮 ========== -->
+<div class="mode-switch" role="group" aria-label="壁纸模式">
+  <button type="button" data-mode="random">随机壁纸</button>
+  <button type="button" data-mode="default" class="active">默认壁纸</button>
+</div>
+
 <main class="wrap">
-  <!-- ================= 班徽置于顶部 ================= -->
+  <!-- 班徽置顶 -->
   <div class="header-badge">
     <img src="./1.png" alt="于都中学 24级 G339 班徽">
   </div>
-  <!-- =============================================== -->
 
   <p class="eyebrow">Countdown · 2027</p>
   <h1 id="title">2027 高考倒计时</h1>
@@ -185,9 +279,7 @@
   /* ============================================================
    *  ①  根据【当前时间】自动决定目标高考日期
    * ============================================================ */
-  var EXAM_MONTH = 5;   // 6 月（月份从 0 开始）
-  var EXAM_DAY   = 7;   // 7 日
-  var EXAM_HOUR  = 9;   // 09:00
+  var EXAM_MONTH = 5, EXAM_DAY = 7, EXAM_HOUR = 9;
 
   function getTarget(now) {
     var year = now.getFullYear();
@@ -201,7 +293,7 @@
   var now0     = new Date();
   var TARGET   = getTarget(now0);
   var TARGET_Y = TARGET.getFullYear();
-  var START    = new Date(TARGET_Y - 1, 8, 1, 0, 0, 0, 0); // 前一年 9 月 1 日开学
+  var START    = new Date(TARGET_Y - 1, 8, 1, 0, 0, 0, 0);
 
   var TARGET_MS = TARGET.getTime();
   var START_MS  = START.getTime();
@@ -242,10 +334,8 @@
   }
 
   function render() {
-    var now  = new Date();
-    var nowMs = now.getTime();
-    var diff = TARGET_MS - nowMs;
-    var ended = diff <= 0;
+    var now = new Date(), nowMs = now.getTime();
+    var diff = TARGET_MS - nowMs, ended = diff <= 0;
     if (ended) diff = 0;
 
     el.now.textContent = '当前时间 ' + fmtDate(now) + '　→　目标 ' + TARGET_Y + '-06-07 09:00';
@@ -286,13 +376,110 @@
   });
 
   render();
-  (function tick() {
-    render();
-    requestAnimationFrame(tick);
+  (function tick() { render(); requestAnimationFrame(tick); })();
+
+  /* ============================================================
+   *  ③  壁纸模式切换（随机壁纸 / 默认壁纸）
+   * ============================================================ */
+  var bgPhoto   = document.getElementById('bgPhoto');
+  var buttons   = document.querySelectorAll('.mode-switch button');
+  var STORAGE_KEY = 'gaokao_bg_mode';
+  var currentMode = 'default';
+  var loadToken   = 0;      // 用于取消过期的加载
+  var isLoading   = false;
+
+  function setActiveBtn(mode) {
+    for (var i = 0; i < buttons.length; i++) {
+      buttons[i].classList.toggle('active', buttons[i].dataset.mode === mode);
+    }
+  }
+
+  function applyMode(mode) {
+    currentMode = mode;
+    document.body.classList.toggle('mode-random',  mode === 'random');
+    document.body.classList.toggle('mode-default', mode === 'default');
+    setActiveBtn(mode);
+    try { localStorage.setItem(STORAGE_KEY, mode); } catch (e) {}
+  }
+
+  function loadRandomWallpaper() {
+    var myToken = ++loadToken;   // 每次调用生成新 token，旧请求自动失效
+    isLoading = true;
+
+    var rndBtn = document.querySelector('.mode-switch button[data-mode="random"]');
+    var oldText = rndBtn ? rndBtn.textContent : '';
+    if (rndBtn) rndBtn.textContent = '加载中…';
+
+    // picsum 免费随机图，带时间戳保证每次不同
+    var url = 'https://picsum.photos/1920/1080?random=' + Date.now();
+
+    var img = new Image();
+    var settled = false;
+
+    var finish = function (ok) {
+      if (settled) return;
+      settled = true;
+      clearTimeout(timer);
+      isLoading = false;
+      if (rndBtn) rndBtn.textContent = oldText || '随机壁纸';
+
+      if (myToken !== loadToken) return;   // 已被更新的请求取代，丢弃
+
+      if (ok) {
+        bgPhoto.style.backgroundImage = 'url("' + url + '")';
+        bgPhoto.classList.add('visible');
+        applyMode('random');
+      } else {
+        // 加载失败或超时 → 回退到默认壁纸
+        bgPhoto.classList.remove('visible');
+        applyMode('default');
+      }
+    };
+
+    var timer = setTimeout(function () { img.src = ''; finish(false); }, 10000);
+    img.onload  = function () { finish(true);  };
+    img.onerror = function () { finish(false); };
+    img.src = url;
+  }
+
+  function backToDefault() {
+    loadToken++;                 // 取消进行中的随机加载
+    isLoading = false;
+    bgPhoto.classList.remove('visible');
+    // 等淡出动画结束后再清空，避免闪一下
+    setTimeout(function () {
+      if (!bgPhoto.classList.contains('visible')) {
+        bgPhoto.style.backgroundImage = '';
+      }
+    }, 820);
+    applyMode('default');
+  }
+
+  for (var i = 0; i < buttons.length; i++) {
+    buttons[i].addEventListener('click', function () {
+      var mode = this.dataset.mode;
+      if (mode === 'random') {
+        // 已经是随机模式再点 → 换一张；否则切到随机
+        loadRandomWallpaper();
+      } else {
+        backToDefault();
+      }
+    });
+  }
+
+  /* 启动时恢复上次选择 */
+  (function initBgMode() {
+    var saved = null;
+    try { saved = localStorage.getItem(STORAGE_KEY); } catch (e) {}
+    if (saved === 'random') {
+      loadRandomWallpaper();
+    } else {
+      applyMode('default');
+    }
   })();
 
   /* ============================================================
-   *  ③  星空 / 流星背景
+   *  ④  星空 / 流星背景
    * ============================================================ */
   var cvs = document.getElementById('stars');
   var ctx = cvs.getContext('2d');
@@ -300,7 +487,8 @@
   var lastTime = performance.now();
   var meteorTimer = 1800;
 
-  var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
+  var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+                 || window.innerWidth < 768;
 
   function buildStars() {
     var count = Math.round((W * H) / 9000);
@@ -353,8 +541,8 @@
     var k = dt / 16.667;
 
     ctx.clearRect(0, 0, W, H);
-
     ctx.globalAlpha = 1;
+
     for (var i = 0; i < stars.length; i++) {
       var st = stars[i];
       st.ph += st.sp * k;
