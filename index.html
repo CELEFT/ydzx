@@ -16,8 +16,8 @@
   }
   #stars{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;}
   
-  /* 背景呼吸光晕 */
-  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.45;z-index:1;pointer-events:none;}
+  /* 背景呼吸光晕 (移动端会减弱) */
+  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.45;z-index:1;pointer-events:none;will-change:transform;}
   .b1{width:60vmax;height:60vmax;left:-22vmax;top:-26vmax;
       background:radial-gradient(circle at 40% 40%,#1e5cff,transparent 62%);
       animation:drift1 20s ease-in-out infinite;}
@@ -27,46 +27,38 @@
   @keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1);}50%{transform:translate3d(8vmax,6vmax,0) scale(1.15);}}
   @keyframes drift2{0%,100%{transform:translate3d(0,0,0) scale(1.12);}50%{transform:translate3d(-7vmax,-5vmax,0) scale(.94);}}
 
-  /* ---- 中心班徽水印 ---- */
-  .badge-bg{
-    position:fixed;
-    top:50%;left:50%;
-    transform:translate(-50%,-50%);
-    width:min(75vmin,420px);
-    height:min(75vmin,420px);
-    opacity:0.18; /* 背景徽章透明度，可按需调整 */
-    z-index:1;
-    pointer-events:none;
-    display:flex;align-items:center;justify-content:center;
-    animation:float 8s ease-in-out infinite;
-    filter:drop-shadow(0 0 35px rgba(80,140,255,.6));
+  /* 主体内容 */
+  .wrap{position:relative;z-index:2;width:min(94vw,780px);padding:30px 15px;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+
+  /* ---- 班徽顶部放置 ---- */
+  .header-badge{
+    margin-bottom: clamp(10px, 2vw, 20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
-  .badge-bg img{
-    width:100%;height:100%;
-    object-fit:contain;
-    border-radius:50%;
-  }
-  @keyframes float{
-    0%,100%{transform:translate(-50%,-50%);}
-    50%{transform:translate(-50%,-53%);}
+  .header-badge img{
+    width: clamp(70px, 18vw, 110px);
+    height: auto;
+    object-fit: contain;
+    border-radius: 50%;
+    filter: drop-shadow(0 0 20px rgba(80,140,255,.5));
   }
 
-  /* 主体内容 */
-  .wrap{position:relative;z-index:2;width:min(94vw,780px);padding:24px 0;text-align:center;}
-  .eyebrow{margin:0 0 12px;font-size:clamp(10px,1.4vw,12px);letter-spacing:.42em;text-indent:.42em;
+  .eyebrow{margin:0 0 8px;font-size:clamp(10px,1.4vw,12px);letter-spacing:.42em;text-indent:.42em;
            color:rgba(234,240,255,.45);text-transform:uppercase;}
-  h1{margin:0;font-size:clamp(21px,3.4vw,32px);font-weight:600;letter-spacing:.14em;text-indent:.14em;
+  h1{margin:0;font-size:clamp(20px,3.4vw,32px);font-weight:600;letter-spacing:.14em;text-indent:.14em;
      background:linear-gradient(100deg,#ffffff 0%,#9fd7ff 35%,#c9b6ff 65%,#ffffff 100%);
      background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
      animation:shine 7s linear infinite;}
   @keyframes shine{from{background-position:0% 50%;}to{background-position:-220% 50%;}}
-  .sub{margin:14px 0 6px;font-size:clamp(12px,1.6vw,14px);letter-spacing:.08em;color:rgba(234,240,255,.55);}
-  .now{margin:0 0 clamp(22px,4vw,32px);font-size:clamp(11px,1.4vw,13px);letter-spacing:.06em;
+  .sub{margin:10px 0 4px;font-size:clamp(12px,1.6vw,14px);letter-spacing:.08em;color:rgba(234,240,255,.55);}
+  .now{margin:0 0 clamp(20px,4vw,32px);font-size:clamp(11px,1.4vw,13px);letter-spacing:.06em;
        color:rgba(160,200,255,.75);font-variant-numeric:tabular-nums;}
 
-  .clock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.6vw,18px);}
-  .unit{position:relative;overflow:hidden;padding:clamp(14px,2.6vw,24px) 4px clamp(10px,1.8vw,16px);
-        border-radius:clamp(14px,2vw,22px);
+  .clock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(6px,1.6vw,18px);width:100%;}
+  .unit{position:relative;overflow:hidden;padding:clamp(12px,2.6vw,24px) 4px clamp(8px,1.8vw,16px);
+        border-radius:clamp(12px,2vw,22px);
         background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.028));
         border:1px solid rgba(255,255,255,.12);
         box-shadow:0 24px 55px -22px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.14);
@@ -81,7 +73,7 @@
   @keyframes sweep{0%{transform:translateX(-130%);}22%,100%{transform:translateX(130%);}}
 
   .num{font-family:ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;
-       font-size:clamp(26px,7vw,62px);font-weight:700;line-height:1;letter-spacing:.02em;display:block;}
+       font-size:clamp(24px,6.5vw,62px);font-weight:700;line-height:1;letter-spacing:.02em;display:block;}
   #d{background:linear-gradient(180deg,#ffffff 0%,#8fdcff 55%,#7c9dff 100%);
      -webkit-background-clip:text;background-clip:text;color:transparent;
      filter:drop-shadow(0 0 18px rgba(110,180,255,.45));}
@@ -90,24 +82,46 @@
   @keyframes pop{0%{transform:translateY(-34%) scale(.88);opacity:0;filter:blur(7px);}
                  55%{transform:translateY(0) scale(1.08);opacity:1;filter:blur(0);}
                  100%{transform:translateY(0) scale(1);opacity:1;}}
-  .label{margin-top:clamp(8px,1.4vw,13px);font-size:clamp(11px,1.5vw,14px);
+  .label{margin-top:clamp(6px,1.4vw,13px);font-size:clamp(10px,1.5vw,14px);
          letter-spacing:.3em;text-indent:.3em;color:rgba(234,240,255,.5);}
 
-  .progress-wrap{margin-top:clamp(26px,4.5vw,44px);}
+  .progress-wrap{margin-top:clamp(22px,4.5vw,44px);width:100%;}
   .progress{height:6px;border-radius:99px;background:rgba(255,255,255,.07);
             border:1px solid rgba(255,255,255,.08);overflow:hidden;}
   .progress i{display:block;height:100%;width:0%;border-radius:99px;
               background:linear-gradient(90deg,#5ee7ff,#a78bfa,#ff7ac6);
               box-shadow:0 0 20px rgba(120,180,255,.85);
               transition:width .8s cubic-bezier(.2,.8,.2,1);}
-  .pct{margin-top:11px;font-size:clamp(11px,1.4vw,12px);letter-spacing:.12em;
+  .pct{margin-top:9px;font-size:clamp(10px,1.4vw,12px);letter-spacing:.12em;
        color:rgba(234,240,255,.42);font-variant-numeric:tabular-nums;}
   .pct b{color:rgba(180,225,255,.95);font-weight:600;}
-  .status{margin:clamp(20px,3.2vw,32px) 0 0;font-size:clamp(11px,1.4vw,13px);
+  .status{margin:clamp(16px,3.2vw,32px) 0 0;font-size:clamp(10px,1.4vw,13px);
           letter-spacing:.14em;color:rgba(234,240,255,.4);}
 
+  /* ================= 移动端性能与布局优化 ================= */
+  @media screen and (max-width: 600px) {
+    /* 隐藏或减弱吃性能的背景光晕 */
+    .blob { opacity: 0.25; filter: blur(50px); }
+    
+    .wrap { padding: 15px 10px; }
+    
+    .clock { gap: 6px; }
+    .unit { padding: 12px 2px 8px; border-radius: 12px; }
+    .num { font-size: 36px; }
+    .label { font-size: 11px; letter-spacing: .1em; margin-top: 5px; }
+    
+    .header-badge img { width: 80px; }
+    .eyebrow { margin-bottom: 5px; }
+    h1 { font-size: 22px; }
+    .sub { font-size: 12px; margin-top: 8px; }
+    .now { font-size: 10px; margin-bottom: 15px; }
+    
+    .progress-wrap { margin-top: 20px; }
+    .status { font-size: 10px; margin-top: 15px; }
+  }
+
   @media (prefers-reduced-motion:reduce){
-    .blob,h1,.unit::after,.num.pop,.badge-bg{animation:none !important;}
+    .blob,h1,.unit::after,.num.pop{animation:none !important;}
     .progress i{transition:none;}
   }
 </style>
@@ -118,14 +132,13 @@
 <div class="blob b1" aria-hidden="true"></div>
 <div class="blob b2" aria-hidden="true"></div>
 
-<!-- ================= 班徽（中间叠加） ================= -->
-<!-- 已将图片路径修改为 ./1.png -->
-<div class="badge-bg" aria-hidden="true">
-  <img src="./1.png" alt="于都中学 24级 G339 班徽">
-</div>
-<!-- ==================================================== -->
-
 <main class="wrap">
+  <!-- ================= 班徽顶部放置 ================= -->
+  <div class="header-badge">
+    <img src="./1.png" alt="于都中学 24级 G339 班徽">
+  </div>
+  <!-- =============================================== -->
+
   <p class="eyebrow">Countdown · 2027</p>
   <h1 id="title">2027 高考倒计时</h1>
   <p class="sub">于都中学 24级 G339 · 距离高考开考，还有</p>
@@ -260,17 +273,21 @@
   })();
 
   /* ============================================================
-   *  ③  星空 / 流星背景
+   *  ③  星空 / 流星背景 (移动端减弱性能开销)
    * ============================================================ */
   var cvs = document.getElementById('stars');
   var ctx = cvs.getContext('2d');
   var W = 0, H = 0, stars = [], meteors = [];
   var lastTime = performance.now();
   var meteorTimer = 1800;
+  
+  // 判断是否为移动端，以优化粒子数量
+  var isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth < 768;
 
   function buildStars() {
     var count = Math.round((W * H) / 9000);
-    count = Math.max(40, Math.min(count, 320));
+    var maxStars = isMobile ? 80 : 320; // 移动端限制最大星星数
+    count = Math.max(30, Math.min(count, maxStars));
     stars = [];
     for (var i = 0; i < count; i++) {
       var hue = Math.random() < 0.28 ? 180 + Math.random() * 60 : 205 + Math.random() * 30;
