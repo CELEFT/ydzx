@@ -1,73 +1,390 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>相册</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#05060f">
+<title>2027 高考倒计时 | 于都中学 24级 G339</title>
+<style>
+  *,*::before,*::after{box-sizing:border-box;}
+  html,body{height:100%;}
+  body{
+    margin:0;min-height:100svh;background:#05060f;color:#eaf0ff;
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+    display:flex;align-items:center;justify-content:center;overflow:hidden;
+    -webkit-font-smoothing:antialiased;
+  }
+  #stars{position:fixed;inset:0;width:100%;height:100%;display:block;z-index:0;}
+  
+  /* 背景呼吸光晕 */
+  .blob{position:fixed;border-radius:50%;filter:blur(70px);opacity:.45;z-index:1;pointer-events:none;}
+  .b1{width:60vmax;height:60vmax;left:-22vmax;top:-26vmax;
+      background:radial-gradient(circle at 40% 40%,#1e5cff,transparent 62%);
+      animation:drift1 20s ease-in-out infinite;}
+  .b2{width:55vmax;height:55vmax;right:-24vmax;bottom:-28vmax;
+      background:radial-gradient(circle at 60% 60%,#8b3cff,transparent 62%);
+      animation:drift2 26s ease-in-out infinite;}
+  @keyframes drift1{0%,100%{transform:translate3d(0,0,0) scale(1);}50%{transform:translate3d(8vmax,6vmax,0) scale(1.15);}}
+  @keyframes drift2{0%,100%{transform:translate3d(0,0,0) scale(1.12);}50%{transform:translate3d(-7vmax,-5vmax,0) scale(.94);}}
 
-        body {
-            background: #f1f5f9;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 1.5rem;
-        }
+  /* ---- 中心班徽水印 ---- */
+  .badge-bg{
+    position:fixed;
+    top:50%;left:50%;
+    transform:translate(-50%,-50%);
+    width:min(75vmin,420px);
+    height:min(75vmin,420px);
+    opacity:0.18; /* 背景徽章透明度，可按需调整 */
+    z-index:1;
+    pointer-events:none;
+    display:flex;align-items:center;justify-content:center;
+    animation:float 8s ease-in-out infinite;
+    filter:drop-shadow(0 0 35px rgba(80,140,255,.6));
+  }
+  .badge-bg img{
+    width:100%;height:100%;
+    object-fit:contain;
+    border-radius:50%;
+  }
+  @keyframes float{
+    0%,100%{transform:translate(-50%,-50%);}
+    50%{transform:translate(-50%,-53%);}
+  }
 
-        .gallery {
-            max-width: 1200px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 2rem;
-        }
+  /* 主体内容 */
+  .wrap{position:relative;z-index:2;width:min(94vw,780px);padding:24px 0;text-align:center;}
+  .eyebrow{margin:0 0 12px;font-size:clamp(10px,1.4vw,12px);letter-spacing:.42em;text-indent:.42em;
+           color:rgba(234,240,255,.45);text-transform:uppercase;}
+  h1{margin:0;font-size:clamp(21px,3.4vw,32px);font-weight:600;letter-spacing:.14em;text-indent:.14em;
+     background:linear-gradient(100deg,#ffffff 0%,#9fd7ff 35%,#c9b6ff 65%,#ffffff 100%);
+     background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;
+     animation:shine 7s linear infinite;}
+  @keyframes shine{from{background-position:0% 50%;}to{background-position:-220% 50%;}}
+  .sub{margin:14px 0 6px;font-size:clamp(12px,1.6vw,14px);letter-spacing:.08em;color:rgba(234,240,255,.55);}
+  .now{margin:0 0 clamp(22px,4vw,32px);font-size:clamp(11px,1.4vw,13px);letter-spacing:.06em;
+       color:rgba(160,200,255,.75);font-variant-numeric:tabular-nums;}
 
-        .photo-card {
-            aspect-ratio: 1 / 1;
-            overflow: hidden;
-            border-radius: 24px;
-            background: #eef2f6;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
+  .clock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(8px,1.6vw,18px);}
+  .unit{position:relative;overflow:hidden;padding:clamp(14px,2.6vw,24px) 4px clamp(10px,1.8vw,16px);
+        border-radius:clamp(14px,2vw,22px);
+        background:linear-gradient(180deg,rgba(255,255,255,.09),rgba(255,255,255,.028));
+        border:1px solid rgba(255,255,255,.12);
+        box-shadow:0 24px 55px -22px rgba(0,0,0,.9),inset 0 1px 0 rgba(255,255,255,.14);
+        -webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);}
+  .unit::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(115deg,transparent 32%,rgba(255,255,255,.16) 50%,transparent 68%);
+    transform:translateX(-130%);animation:sweep 6s ease-in-out infinite;pointer-events:none;}
+  .unit:nth-child(1)::after{animation-delay:0s;}
+  .unit:nth-child(2)::after{animation-delay:.6s;}
+  .unit:nth-child(3)::after{animation-delay:1.2s;}
+  .unit:nth-child(4)::after{animation-delay:1.8s;}
+  @keyframes sweep{0%{transform:translateX(-130%);}22%,100%{transform:translateX(130%);}}
 
-        .photo-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.12);
-        }
+  .num{font-family:ui-monospace,Menlo,Consolas,monospace;font-variant-numeric:tabular-nums;
+       font-size:clamp(26px,7vw,62px);font-weight:700;line-height:1;letter-spacing:.02em;display:block;}
+  #d{background:linear-gradient(180deg,#ffffff 0%,#8fdcff 55%,#7c9dff 100%);
+     -webkit-background-clip:text;background-clip:text;color:transparent;
+     filter:drop-shadow(0 0 18px rgba(110,180,255,.45));}
+  #h,#m,#s{color:#f2f6ff;text-shadow:0 0 22px rgba(150,190,255,.35);}
+  .num.pop{animation:pop .5s cubic-bezier(.2,.85,.25,1);}
+  @keyframes pop{0%{transform:translateY(-34%) scale(.88);opacity:0;filter:blur(7px);}
+                 55%{transform:translateY(0) scale(1.08);opacity:1;filter:blur(0);}
+                 100%{transform:translateY(0) scale(1);opacity:1;}}
+  .label{margin-top:clamp(8px,1.4vw,13px);font-size:clamp(11px,1.5vw,14px);
+         letter-spacing:.3em;text-indent:.3em;color:rgba(234,240,255,.5);}
 
-        .photo-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: block;
-        }
+  .progress-wrap{margin-top:clamp(26px,4.5vw,44px);}
+  .progress{height:6px;border-radius:99px;background:rgba(255,255,255,.07);
+            border:1px solid rgba(255,255,255,.08);overflow:hidden;}
+  .progress i{display:block;height:100%;width:0%;border-radius:99px;
+              background:linear-gradient(90deg,#5ee7ff,#a78bfa,#ff7ac6);
+              box-shadow:0 0 20px rgba(120,180,255,.85);
+              transition:width .8s cubic-bezier(.2,.8,.2,1);}
+  .pct{margin-top:11px;font-size:clamp(11px,1.4vw,12px);letter-spacing:.12em;
+       color:rgba(234,240,255,.42);font-variant-numeric:tabular-nums;}
+  .pct b{color:rgba(180,225,255,.95);font-weight:600;}
+  .status{margin:clamp(20px,3.2vw,32px) 0 0;font-size:clamp(11px,1.4vw,13px);
+          letter-spacing:.14em;color:rgba(234,240,255,.4);}
 
-        @media (max-width: 700px) {
-            body {
-                padding: 1rem;
-            }
-            .gallery {
-                grid-template-columns: 1fr;
-                gap: 1.5rem;
-            }
-        }
-    </style>
+  @media (prefers-reduced-motion:reduce){
+    .blob,h1,.unit::after,.num.pop,.badge-bg{animation:none !important;}
+    .progress i{transition:none;}
+  }
+</style>
 </head>
 <body>
-    <div class="gallery">
-        <div class="photo-card">
-            <img src="photo/1.png" alt="" loading="lazy" />
-        </div>
-        <div class="photo-card">
-            <img src="photo/2.png" alt="" loading="lazy" />
-        </div>
-    </div>
+
+<canvas id="stars" aria-hidden="true"></canvas>
+<div class="blob b1" aria-hidden="true"></div>
+<div class="blob b2" aria-hidden="true"></div>
+
+<!-- ================= 班徽（中间叠加） ================= -->
+<!-- 已将图片路径修改为 ./1.png -->
+<div class="badge-bg" aria-hidden="true">
+  <img src="./1.png" alt="于都中学 24级 G339 班徽">
+</div>
+<!-- ==================================================== -->
+
+<main class="wrap">
+  <p class="eyebrow">Countdown · 2027</p>
+  <h1 id="title">2027 高考倒计时</h1>
+  <p class="sub">于都中学 24级 G339 · 距离高考开考，还有</p>
+  <p class="now" id="now"></p>
+
+  <div class="clock" role="timer" aria-live="off">
+    <div class="unit"><span class="num" id="d">000</span><div class="label">天</div></div>
+    <div class="unit"><span class="num" id="h">00</span><div class="label">时</div></div>
+    <div class="unit"><span class="num" id="m">00</span><div class="label">分</div></div>
+    <div class="unit"><span class="num" id="s">00</span><div class="label">秒</div></div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress"><i id="bar"></i></div>
+    <div class="pct">高三学年进度 <b id="pct">0.00%</b></div>
+  </div>
+
+  <p class="status" id="status">正在校准当前时间…</p>
+</main>
+
+<script>
+(function () {
+  'use strict';
+
+  /* ============================================================
+   *  ①  根据【当前时间】自动决定目标高考日期
+   * ============================================================ */
+  var EXAM_MONTH = 5;   // 6 月（月份从 0 开始）
+  var EXAM_DAY   = 7;   // 7 日
+  var EXAM_HOUR  = 9;   // 09:00
+
+  function getTarget(now) {
+    var year = now.getFullYear();
+    var t = new Date(year, EXAM_MONTH, EXAM_DAY, EXAM_HOUR, 0, 0, 0);
+    if (now.getTime() >= t.getTime()) {
+      t = new Date(year + 1, EXAM_MONTH, EXAM_DAY, EXAM_HOUR, 0, 0, 0);
+    }
+    return t;
+  }
+
+  var now0     = new Date();
+  var TARGET   = getTarget(now0);
+  var TARGET_Y = TARGET.getFullYear();
+  var START    = new Date(TARGET_Y - 1, 8, 1, 0, 0, 0, 0); // 前一年 9 月 1 日开学
+
+  var TARGET_MS = TARGET.getTime();
+  var START_MS  = START.getTime();
+  var TOTAL_MS  = TARGET_MS - START_MS;
+
+  document.getElementById('title').textContent = TARGET_Y + ' 高考倒计时';
+  document.title = TARGET_Y + ' 高考倒计时 | 于都中学 24级 G339';
+
+  /* ============================================================
+   *  ②  倒计时渲染
+   * ============================================================ */
+  var el = {
+    d:      document.getElementById('d'),
+    h:      document.getElementById('h'),
+    m:      document.getElementById('m'),
+    s:      document.getElementById('s'),
+    bar:    document.getElementById('bar'),
+    pct:    document.getElementById('pct'),
+    status: document.getElementById('status'),
+    now:    document.getElementById('now')
+  };
+
+  var lastSec = -1;
+  var pad2 = function (n) { return String(n).padStart(2, '0'); };
+  var pad3 = function (n) { return String(n).padStart(3, '0'); };
+
+  function setVal(node, str) {
+    if (node.textContent === str) return;
+    node.textContent = str;
+    node.classList.remove('pop');
+    void node.offsetWidth;
+    node.classList.add('pop');
+  }
+
+  function fmtDate(d) {
+    return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()) + ' ' +
+           pad2(d.getHours()) + ':' + pad2(d.getMinutes()) + ':' + pad2(d.getSeconds());
+  }
+
+  function render() {
+    var now  = new Date();
+    var nowMs = now.getTime();
+    var diff = TARGET_MS - nowMs;
+    var ended = diff <= 0;
+    if (ended) diff = 0;
+
+    el.now.textContent = '当前时间 ' + fmtDate(now) + '　→　目标 ' + TARGET_Y + '-06-07 09:00';
+
+    var totalSec = Math.floor(diff / 1000);
+    if (totalSec !== lastSec) {
+      lastSec = totalSec;
+
+      var days  = Math.floor(totalSec / 86400);
+      var hours = Math.floor((totalSec % 86400) / 3600);
+      var mins  = Math.floor((totalSec % 3600) / 60);
+      var secs  = totalSec % 60;
+
+      setVal(el.d, pad3(days));
+      setVal(el.h, pad2(hours));
+      setVal(el.m, pad2(mins));
+      setVal(el.s, pad2(secs));
+
+      var p = (nowMs - START_MS) / TOTAL_MS;
+      p = Math.max(0, Math.min(1, p));
+      el.bar.style.width = (p * 100).toFixed(4) + '%';
+      el.pct.textContent = (p * 100).toFixed(2) + '%';
+
+      if (ended) {
+        el.status.textContent = '高考已开始 · 愿你合上笔盖的刹那，有侠客收剑入鞘的骄傲';
+      } else if (days === 0) {
+        el.status.textContent = '就是今天 · 沉着应考，正常发挥';
+      } else if (days < 100) {
+        el.status.textContent = '最后 ' + days + ' 天 · 稳住，G339 能赢';
+      } else {
+        el.status.textContent = '目标时刻：' + TARGET_Y + '-06-07 09:00（本地时间）';
+      }
+    }
+  }
+
+  document.addEventListener('visibilitychange', function () {
+    if (!document.hidden) { lastSec = -1; render(); }
+  });
+
+  render();
+  (function tick() {
+    render();
+    requestAnimationFrame(tick);
+  })();
+
+  /* ============================================================
+   *  ③  星空 / 流星背景
+   * ============================================================ */
+  var cvs = document.getElementById('stars');
+  var ctx = cvs.getContext('2d');
+  var W = 0, H = 0, stars = [], meteors = [];
+  var lastTime = performance.now();
+  var meteorTimer = 1800;
+
+  function buildStars() {
+    var count = Math.round((W * H) / 9000);
+    count = Math.max(40, Math.min(count, 320));
+    stars = [];
+    for (var i = 0; i < count; i++) {
+      var hue = Math.random() < 0.28 ? 180 + Math.random() * 60 : 205 + Math.random() * 30;
+      stars.push({
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: Math.random() * 1.25 + 0.3,
+        ph: Math.random() * Math.PI * 2,
+        sp: Math.random() * 0.022 + 0.005,
+        vy: Math.random() * 0.09 + 0.02,
+        color: 'hsl(' + hue.toFixed(0) + ',100%,82%)'
+      });
+    }
+  }
+
+  function resize() {
+    var dpr = Math.min(window.devicePixelRatio || 1, 2);
+    W = window.innerWidth;
+    H = window.innerHeight;
+    cvs.width  = Math.floor(W * dpr);
+    cvs.height = Math.floor(H * dpr);
+    cvs.style.width  = W + 'px';
+    cvs.style.height = H + 'px';
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    buildStars();
+  }
+
+  function spawnMeteor() {
+    var speed = 7 + Math.random() * 6;
+    var ang   = Math.PI / 4 + (Math.random() * 0.4 - 0.2);
+    var dir   = Math.random() < 0.5 ? 1 : -1;
+    meteors.push({
+      x: dir > 0 ? Math.random() * W * 0.5 : W * 0.5 + Math.random() * W * 0.5,
+      y: Math.random() * H * 0.35,
+      vx: Math.cos(ang) * speed * dir,
+      vy: Math.sin(ang) * speed,
+      len: 130 + Math.random() * 170,
+      life: 1
+    });
+  }
+
+  function draw(now) {
+    var dt = Math.min(now - lastTime, 60);
+    lastTime = now;
+    var k = dt / 16.667;
+
+    ctx.clearRect(0, 0, W, H);
+
+    ctx.globalAlpha = 1;
+    for (var i = 0; i < stars.length; i++) {
+      var st = stars[i];
+      st.ph += st.sp * k;
+      st.y  += st.vy * k;
+      if (st.y > H + 4) { st.y = -4; st.x = Math.random() * W; }
+      var a = 0.18 + 0.82 * (0.5 + 0.5 * Math.sin(st.ph));
+      ctx.globalAlpha = a * 0.85;
+      ctx.beginPath();
+      ctx.arc(st.x, st.y, st.r, 0, 6.2832);
+      ctx.fillStyle = st.color;
+      ctx.fill();
+    }
+    ctx.globalAlpha = 1;
+
+    meteorTimer -= dt;
+    if (meteorTimer <= 0) {
+      meteorTimer = 2600 + Math.random() * 6500;
+      spawnMeteor();
+    }
+
+    for (var j = meteors.length - 1; j >= 0; j--) {
+      var m = meteors[j];
+      m.x += m.vx * k;
+      m.y += m.vy * k;
+      m.life -= 0.0075 * k;
+
+      if (m.life <= 0 || m.x < -400 || m.x > W + 400 || m.y > H + 400) {
+        meteors.splice(j, 1);
+        continue;
+      }
+
+      var mag = Math.hypot(m.vx, m.vy) || 1;
+      var nx = m.vx / mag, ny = m.vy / mag;
+      var tx = m.x - nx * m.len;
+      var ty = m.y - ny * m.len;
+
+      var g = ctx.createLinearGradient(m.x, m.y, tx, ty);
+      g.addColorStop(0,    'rgba(255,255,255,' + (0.9 * m.life).toFixed(3) + ')');
+      g.addColorStop(0.35, 'rgba(150,205,255,' + (0.35 * m.life).toFixed(3) + ')');
+      g.addColorStop(1,    'rgba(150,205,255,0)');
+
+      ctx.strokeStyle = g;
+      ctx.lineWidth = 1.6;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(m.x, m.y);
+      ctx.lineTo(tx, ty);
+      ctx.stroke();
+    }
+
+    requestAnimationFrame(draw);
+  }
+
+  var rt = null;
+  window.addEventListener('resize', function () {
+    clearTimeout(rt);
+    rt = setTimeout(resize, 150);
+  });
+
+  resize();
+  requestAnimationFrame(function (t) {
+    lastTime = t;
+    requestAnimationFrame(draw);
+  });
+})();
+</script>
 </body>
 </html>
